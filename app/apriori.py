@@ -8,7 +8,7 @@ import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import json
 import ast
 
-df = pd.read_csv('RAW_recipes.csv')
+df = pd.read_csv("RAW_recipes.csv.zip")
 dish_ing = df[['name','ingredients']].copy()
 dish_ing.loc[:,'ingredients'] = dish_ing['ingredients'].apply(lambda lst: set(ast.literal_eval(lst)))
 
