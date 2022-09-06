@@ -3,6 +3,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMessageBox, QLabel
 import sqlite3
 from collections import defaultdict
+import apriori as ap
 
 # support of list of ingredients along with dish
 # spaghetti ~ tomatoes, sauce, 
@@ -23,7 +24,6 @@ records = c.fetchall()
 conn.commit()
 # Close our connection
 conn.close()
-print(records)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -34,10 +34,13 @@ class Ui_MainWindow(object):
         box_size_x = 140
         box_size_y = 35
 
+
+        self.algo_apri = ap.Apri()
+        
         # size of displayed window
         MainWindow.setWindowIcon(QtGui.QIcon('wolf.jpg'))
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(buttons_x+3*box_size_x+padding, buttons_y + box_size_y*10)
+        MainWindow.resize(buttons_x+5*box_size_x+padding, buttons_y + box_size_y*15)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
@@ -45,7 +48,7 @@ class Ui_MainWindow(object):
         pixmap = QPixmap("wolf.jpg")
         pixmap = pixmap.scaled(padding*4, padding*4, QtCore.Qt.KeepAspectRatio)
         self.photo.setPixmap(pixmap)
-        self.photo.move(100, 300)
+        self.photo.move(100, box_size_y*10)
 
         # Let user type in their dish for an entry
         self.additem_blankbox = QtWidgets.QLineEdit(self.centralwidget)
@@ -53,43 +56,52 @@ class Ui_MainWindow(object):
         self.additem_blankbox.setObjectName("additem_blankbox")
         self.additem_blankbox.setPlaceholderText("Dish Name") 
 
+        # Let user type in their ingredients for an entry
+        self.add_ing_blankbox = QtWidgets.QLineEdit(self.centralwidget)
+        self.add_ing_blankbox.setGeometry(QtCore.QRect(buttons_x, buttons_y, buttons_x+3*box_size_x, box_size_y))
+        self.add_ing_blankbox.setObjectName("add_ing_blankbox")
+        self.add_ing_blankbox.setPlaceholderText("Dish Ingredients") 
+
         # Let user add dish 
         self.add_dish_pushButton = QtWidgets.QPushButton(self.centralwidget, clicked= lambda: self.add())
-        self.add_dish_pushButton.setGeometry(QtCore.QRect(buttons_x, buttons_y, box_size_x, box_size_y))
+        self.add_dish_pushButton.setGeometry(QtCore.QRect(buttons_x, buttons_y*2, box_size_x, box_size_y))
         self.add_dish_pushButton.setObjectName("add_dish_pushButton")
 
         # Let user delete dish 
         self.delete_dish_pushButton = QtWidgets.QPushButton(self.centralwidget, clicked= lambda: self.delete())
-        self.delete_dish_pushButton.setGeometry(QtCore.QRect(buttons_x+box_size_x, buttons_y, box_size_x, box_size_y))
+        self.delete_dish_pushButton.setGeometry(QtCore.QRect(buttons_x+box_size_x, buttons_y*2, box_size_x, box_size_y))
         self.delete_dish_pushButton.setObjectName("delete_dish_pushButton")
 
         # Let user view dish using pop up window
         self.view_list = QtWidgets.QPushButton(self.centralwidget, clicked= lambda: self.view())
-        self.view_list.setGeometry(QtCore.QRect(buttons_x+2*box_size_x, buttons_y, box_size_x, box_size_y))
+        self.view_list.setGeometry(QtCore.QRect(buttons_x+2*box_size_x, buttons_y*2, box_size_x, box_size_y))
         self.view_list.setObjectName("view_list")
-
-        # Let user view dish using pop up window
-        self.searching_dish = QtWidgets.QPushButton(self.centralwidget, clicked= lambda: self.searching())
-        self.searching_dish.setGeometry(QtCore.QRect(buttons_x+box_size_x, buttons_y*3, box_size_x, box_size_y))
-        self.searching_dish.setObjectName("searching")
-
-        # Let user type in their dish for an entry
-        self.searching_blankbox = QtWidgets.QLineEdit(self.centralwidget)
-        self.searching_blankbox.setGeometry(QtCore.QRect(buttons_x, buttons_y*4, buttons_x+3*box_size_x, box_size_y))
-        self.searching_blankbox.setObjectName("searching_blankbox")
-        self.searching_blankbox.setPlaceholderText("Search Dish based on Ingredients") 
-
-
-        # Let user type in their ingredients for an entry
-        self.add_ing_blankbox = QtWidgets.QLineEdit(self.centralwidget)
-        self.add_ing_blankbox.setGeometry(QtCore.QRect(buttons_x, buttons_y*2, buttons_x+3*box_size_x, box_size_y))
-        self.add_ing_blankbox.setObjectName("add_ing_blankbox")
-        self.add_ing_blankbox.setPlaceholderText("Dish Ingredients") 
 
         # Let user clear all dishes
         self.clearall_pushButton = QtWidgets.QPushButton(self.centralwidget, clicked= lambda: self.clear_all())
-        self.clearall_pushButton.setGeometry(QtCore.QRect(buttons_x+3*box_size_x, buttons_y, box_size_x, box_size_y))
+        self.clearall_pushButton.setGeometry(QtCore.QRect(buttons_x+3*box_size_x, buttons_y*2, box_size_x, box_size_y))
         self.clearall_pushButton.setObjectName("clearall_pushButton")
+
+        # Let user type in their dish for an entry
+        self.searching_blankbox = QtWidgets.QLineEdit(self.centralwidget)
+        self.searching_blankbox.setGeometry(QtCore.QRect(buttons_x, buttons_y*3, buttons_x+3*box_size_x, box_size_y))
+        self.searching_blankbox.setObjectName("searching_blankbox")
+        self.searching_blankbox.setPlaceholderText("Search Dish based on Ingredients") 
+        # Let user view dish using pop up window
+        self.searching_dish = QtWidgets.QPushButton(self.centralwidget, clicked= lambda: self.searching())
+        self.searching_dish.setGeometry(QtCore.QRect(buttons_x+box_size_x, buttons_y*4, box_size_x, box_size_y))
+        self.searching_dish.setObjectName("searching")
+
+
+        # Let user type in their dish for an entry
+        self.recommend_blankbox = QtWidgets.QLineEdit(self.centralwidget)
+        self.recommend_blankbox.setGeometry(QtCore.QRect(buttons_x, buttons_y*5, buttons_x+3*box_size_x, box_size_y))
+        self.recommend_blankbox.setObjectName("recommend_blankbox")
+        self.recommend_blankbox.setPlaceholderText("Recommend Dish based on Ingredients") 
+        # Let user view dish using pop up window
+        self.recommend_dish = QtWidgets.QPushButton(self.centralwidget, clicked= lambda: self.recommending())
+        self.recommend_dish.setGeometry(QtCore.QRect(buttons_x+box_size_x, buttons_y*6, box_size_x*2, box_size_y))
+        self.recommend_dish.setObjectName("recommending")
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)
@@ -223,7 +235,7 @@ class Ui_MainWindow(object):
         ing_lst = []
         # Loop through the records and pull out each dish
         # records contains a list of tuples
-        # print(records)
+
         for record in records:
             dish_lst.append(record[0])
             ing_lst.append(record[1])
@@ -235,7 +247,7 @@ class Ui_MainWindow(object):
             lst_ing = ing.split(',')
             for item in lst_ing:
                 dct[item.lstrip().rstrip()].append(dish_lst[i])
-        print(dct)
+
         ingredients = self.searching_blankbox.text()
         search_ing = ingredients.split(',')
 
@@ -249,6 +261,25 @@ class Ui_MainWindow(object):
 
             
         print(wanted_dish)
+
+    def recommending(self):
+        '''
+        Search dishes based on ingredients
+        '''
+        ings_input = self.recommend_blankbox.text()
+        ings_set = set([i.lstrip().rstrip() for i in ings_input.split(',')])
+        self.algo_apri.user_add()
+        df = self.algo_apri.association_rule()
+        dishes = self.algo_apri.recommend(ings_set, df)
+        # Add message box to show details of dishes
+        msg = QMessageBox()
+        msg.setWindowTitle("Recommeded Dishes")
+        msg.setStyleSheet("QLabel{min-width: 200px;}")
+        msg.setDetailedText(str(dishes))
+        msg.setText('Click to show')
+        msg.setIcon(QMessageBox.Information)
+        msg.exec_()
+
 
 
     def grab_all(self):
@@ -332,9 +363,11 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "Chef Cuisine Journey"))
         self.add_dish_pushButton.setText(_translate("MainWindow", "Add Dish To List"))
         self.view_list.setText(_translate("MainWindow", "View List"))
-        self.delete_dish_pushButton.setText(_translate("MainWindow", "Delete Dish From List"))
-        self.searching_dish.setText(_translate("MainWindow", "Search Dish From List"))
+        self.delete_dish_pushButton.setText(_translate("MainWindow", "Delete Dish"))
+        self.searching_dish.setText(_translate("MainWindow", "Search Dish"))
         self.clearall_pushButton.setText(_translate("MainWindow", "Clear Dishes"))
+        self.recommend_dish.setText(_translate("MainWindow", "Recommend Dishes"))
+
         
         # self.savedb_pushButton.setText(_translate("MainWindow", "Save To Database"))
 
