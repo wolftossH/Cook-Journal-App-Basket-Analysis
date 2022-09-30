@@ -180,9 +180,9 @@ class Ui_MainWindow(object):
         Observe Dishes
         '''
         # Warning box or Pop up box
-        msg = QMessageBox()
-        msg.setWindowTitle("Viewing Dishes")
-        msg.setStyleSheet("QLabel{min-width: 200px;}");
+        # msg = QMessageBox()
+        # msg.setWindowTitle("Viewing Dishes")
+        # msg.setStyleSheet("QLabel{min-width: 200px;}");
 
         # Create a database or connect to one
         conn = sqlite3.connect('dishes.db')
@@ -209,7 +209,15 @@ class Ui_MainWindow(object):
         dishes = [dish_lst[i] + ' - ' + ing_lst[i] for i in range(len(dish_lst))]
         print(dishes)
         dishes = '\n'.join(dishes)
-        msg.setText(dishes)
+        # msg.setText(dishes)
+        # msg.setIcon(QMessageBox.Information)
+        # msg.exec_()
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Dishes Display")
+        msg.setStyleSheet("QLabel{min-width: 200px;}")
+        msg.setDetailedText(str(dishes))
+        msg.setText('Click Details to show')
         msg.setIcon(QMessageBox.Information)
         msg.exec_()
 
@@ -259,7 +267,18 @@ class Ui_MainWindow(object):
                 wanted_dish = wanted_dish.union(set(dct[s_ing]))
                 # print(wanted_dish)
 
-            
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Dishes Search")
+        msg.setStyleSheet("QLabel{min-width: 200px;}")
+        msg.setText(str(wanted_dish).lstrip('{').rstrip('}'))
+        msg.setIcon(QMessageBox.Information)
+
+        # msg.setDetailedText(str(wanted_dish).lstrip('{').rstrip('}'))
+        # msg.setText('Click to show')
+        # msg.setIcon(QMessageBox.Information)
+
+        msg.exec_()
         print(wanted_dish)
 
     def recommending(self):
@@ -362,7 +381,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Chef Cuisine Journey"))
         self.add_dish_pushButton.setText(_translate("MainWindow", "Add Dish To List"))
-        self.view_list.setText(_translate("MainWindow", "View List"))
+        self.view_list.setText(_translate("MainWindow", "View Journal"))
         self.delete_dish_pushButton.setText(_translate("MainWindow", "Delete Dish"))
         self.searching_dish.setText(_translate("MainWindow", "Search Dish"))
         self.clearall_pushButton.setText(_translate("MainWindow", "Clear Dishes"))

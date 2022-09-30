@@ -114,5 +114,5 @@ class Apri:
                 else:
                     wanted_dishes = wanted_dishes.union(dishes_set)
             
-        return wanted_dishes
+        return wanted_dishes if len(wanted_dishes) > 0 else ''
     
