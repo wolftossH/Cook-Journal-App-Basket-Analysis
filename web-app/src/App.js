@@ -1,26 +1,28 @@
 import logo from './logo.svg';
 import './App.css';
+import Header from './components/header';
+import Footer from './components/footer';
+
+
+function createAlert() {
+  alert('Hello. You clicked');
+
+}
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        Hello World!!
-        {/* <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a> */}
-      </header>
+      <Header info='This is MY message'/>
+      <Header info='This is header'/>
+      <p>main content</p>
+      <Footer trademark='page by Henry'
+        myalert = {createAlert}/>
     </div>
   );
+}
+
+function OurText() {
+  return <p>This is our text</p>
 }
 
 export default App;
