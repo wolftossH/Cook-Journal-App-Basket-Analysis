@@ -2,6 +2,7 @@
 import './App.css';
 import Header from './components/header';
 import Footer from './components/footer';
+import Numbers from './components/numbers';
 import styled from 'styled-components';
 
 function createAlert() {
@@ -34,6 +35,7 @@ color:green;
 function App() {
   return (
     <div className="App">
+      <Numbers></Numbers>
       <Header info='This is MY message'/>
       <Header info='This is header'/>
       <p style = {pStyle}>main content</p>
