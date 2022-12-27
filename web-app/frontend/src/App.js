@@ -15,6 +15,10 @@ function App() {
       <header className="App-header">
         <form>
           <label htmlFor='description'>Description</label>
+          <input
+            type='text'
+            name='description'
+          />
         </form>
       </header>
     </div>
