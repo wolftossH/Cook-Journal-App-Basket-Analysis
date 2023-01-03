@@ -6,6 +6,10 @@ import './App.css';
 
 const baseUrl = 'http://localhost:5000'
 
+const handleChange = e => {
+  setDescription(e.target.value);
+}
+
 function App() {
 
   const[description, setDescription] = useState('');
@@ -16,8 +20,11 @@ function App() {
         <form>
           <label htmlFor='description'>Description</label>
           <input
+            onChange={handleChange}
             type='text'
             name='description'
+            id = 'description'
+            value = {description}
           />
         </form>
       </header>
